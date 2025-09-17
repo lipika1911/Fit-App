@@ -1,21 +1,48 @@
-import ClassCard from "@/components/ClassCard";
-import EmptyState from "@/components/EmptyState";
-import FilterSection from "@/components/FilterSection";
-import InstructorModal from "@/components/InstructorModal";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import { mockClasses, instructors } from "@/data/mockData";
-import {FilterState, FitnessClass } from "@/types";
-import { useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+"use client"
+
+import type React from "react"
+import { useState, useEffect, useMemo } from "react"
+import { View, FlatList, StyleSheet } from "react-native"
+
+import ClassCard from "@/components/ClassCard"
+import LoadingSpinner from "@/components/LoadingSpinner"
+import EmptyState from "@/components/EmptyState"
+import FilterSection from "@/components/FilterSection"
+import InstructorModal from "@/components/InstructorModal"
+import BookingToast from "@/components/BookingToast"
+import { mockClasses, instructors } from "@/data/mockData"
+import { simulateBooking } from "@/utils/bookingService"
+import type { FitnessClass, FilterState } from "@/types"
+
+interface ToastState {
+  visible: boolean
+  message: string
+  type: "success" | "error"
+}
 
 const HomeScreen: React.FC = () => {
   const [classes, setClasses] = useState<FitnessClass[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState<FilterState>({
     level: [],
     instructor: "All Instructors",
   })
   const [showInstructorModal, setShowInstructorModal] = useState(false)
+  const [toast, setToast] = useState<ToastState>({
+    visible: false,
+    message: "",
+    type: "success",
+  })
+
+  useEffect(() => {
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setClasses(mockClasses)
+      setLoading(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const filteredClasses = useMemo(() => {
     return classes.filter((cls) => {
@@ -24,6 +51,36 @@ const HomeScreen: React.FC = () => {
       return levelMatch && instructorMatch
     })
   }, [classes, filters])
+
+  const showToast = (message: string, type: "success" | "error") => {
+    setToast({
+      visible: true,
+      message,
+      type,
+    })
+  }
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, visible: false }))
+  }
+
+  const handleQuickBook = async (classId: string): Promise<void> => {
+    setClasses((prev) => prev.map((cls) => (cls.id === classId ? { ...cls, isBooked: true } : cls)))
+
+    try {
+      const result = await simulateBooking(classId)
+
+      if (result.success) {
+        showToast(result.message, "success")
+      } else {
+        setClasses((prev) => prev.map((cls) => (cls.id === classId ? { ...cls, isBooked: false } : cls)))
+        showToast(result.message, "error")
+      }
+    } catch (error) {
+      setClasses((prev) => prev.map((cls) => (cls.id === classId ? { ...cls, isBooked: false } : cls)))
+      showToast("An unexpected error occurred. Please try again.", "error")
+    }
+  }
 
   const handleLevelToggle = (level: string) => {
     setFilters((prev) => ({
@@ -45,15 +102,6 @@ const HomeScreen: React.FC = () => {
       instructor: "All Instructors",
     })
   }
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setClasses(mockClasses)
-      setLoading(false)
-    }, 1500)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   if (loading) {
     return <LoadingSpinner message="Loading classes..." />
@@ -86,14 +134,13 @@ const HomeScreen: React.FC = () => {
           onSelect={handleInstructorSelect}
           onClose={() => setShowInstructorModal(false)}
         />
+        <BookingToast visible={toast.visible} message={toast.message} type={toast.type} onHide={hideToast} />
       </View>
     )
   }
 
   return (
-    <View
-      style={styles.container}
-    >
+    <View style={styles.container}>
       <FilterSection
         filters={filters}
         onLevelToggle={handleLevelToggle}
@@ -105,7 +152,7 @@ const HomeScreen: React.FC = () => {
         <FlatList
           data={filteredClasses}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <ClassCard fitnessClass={item} />}
+          renderItem={({ item }) => <ClassCard fitnessClass={item} onQuickBook={handleQuickBook} />}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={true}
           bounces={true}
@@ -120,8 +167,9 @@ const HomeScreen: React.FC = () => {
         onClose={() => setShowInstructorModal(false)}
       />
 
+      <BookingToast visible={toast.visible} message={toast.message} type={toast.type} onHide={hideToast} />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({

@@ -1,14 +1,17 @@
 "use client"
 
 import type React from "react"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { useState } from "react"
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import type { FitnessClass } from "@/types"
 
 interface ClassCardProps {
   fitnessClass: FitnessClass
+  onQuickBook: (classId: string) => Promise<void>
 }
 
-const ClassCard: React.FC<ClassCardProps> = ({ fitnessClass}) => {
+const ClassCard: React.FC<ClassCardProps> = ({ fitnessClass, onQuickBook }) => {
+  const [isBooking, setIsBooking] = useState(false)
 
   const getLevelColor = (level: string) => {
     switch (level) {
@@ -21,6 +24,44 @@ const ClassCard: React.FC<ClassCardProps> = ({ fitnessClass}) => {
       default:
         return "#757575"
     }
+  }
+
+  const handleBookPress = async () => {
+    if (isBooking || fitnessClass.isBooked) return
+
+    setIsBooking(true)
+    try {
+      await onQuickBook(fitnessClass.id)
+    } finally {
+      setIsBooking(false)
+    }
+  }
+
+  const getButtonContent = () => {
+    if (isBooking) {
+      return <ActivityIndicator size="small" color="#fff" />
+    }
+    if (fitnessClass.isBooked) {
+      return "Booked"
+    }
+    return "Quick Book"
+  }
+
+  const getButtonStyle = () => {
+    if (fitnessClass.isBooked) {
+      return [styles.bookButton, styles.bookedButton]
+    }
+    if (isBooking) {
+      return [styles.bookButton, styles.bookingButton]
+    }
+    return styles.bookButton
+  }
+
+  const getButtonTextStyle = () => {
+    if (fitnessClass.isBooked) {
+      return [styles.bookButtonText, styles.bookedButtonText]
+    }
+    return styles.bookButtonText
   }
 
   return (
@@ -38,9 +79,16 @@ const ClassCard: React.FC<ClassCardProps> = ({ fitnessClass}) => {
       </View>
 
       <TouchableOpacity
-        style={styles.bookButton}
+        style={getButtonStyle()}
+        onPress={handleBookPress}
+        disabled={fitnessClass.isBooked || isBooking}
+        activeOpacity={0.8}
       >
-        <Text style={styles.bookButtonText}>Quick Book</Text>
+        {typeof getButtonContent() === "string" ? (
+          <Text style={getButtonTextStyle()}>{getButtonContent()}</Text>
+        ) : (
+          getButtonContent()
+        )}
       </TouchableOpacity>
     </View>
   )
@@ -109,10 +157,19 @@ const styles = StyleSheet.create({
     minHeight: 44,
     justifyContent: "center",
   },
+  bookedButton: {
+    backgroundColor: "#E0E0E0",
+  },
+  bookingButton: {
+    backgroundColor: "#0056CC",
+  },
   bookButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  bookedButtonText: {
+    color: "#666",
   },
 })
 
