@@ -1,6 +1,23 @@
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function HomeScreen() {
+const HomeScreen: React.FC = () => {
+
+  const [loading, setLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (loading) {
+    return <LoadingSpinner message="Loading classes..." />
+  }
+
   return (
     <View
       style={styles.view}
@@ -17,3 +34,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 })
+
+export default HomeScreen

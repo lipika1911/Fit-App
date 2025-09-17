@@ -1,6 +1,7 @@
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function ProfileScreen() {
+const ProfileScreen: React.FC = () => {
   return (
     <View
       style={styles.view}
@@ -17,3 +18,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 })
+
+export default ProfileScreen
