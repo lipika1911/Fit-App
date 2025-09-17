@@ -16,3 +16,7 @@ export interface User {
   joinedDate: string
   avatar?: string
 }
+
+export interface FilterState {
+  level: string[]
+}

@@ -1,13 +1,37 @@
 import ClassCard from "@/components/ClassCard";
+import FilterSection from "@/components/FilterSection";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { mockClasses } from "@/data/mockData";
-import {FitnessClass } from "@/types";
-import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {FilterState, FitnessClass } from "@/types";
+import { useEffect, useMemo, useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 
 const HomeScreen: React.FC = () => {
   const [classes, setClasses] = useState<FitnessClass[]>([])
   const [loading, setLoading] = useState<boolean>(true)
+  const [filters, setFilters] = useState<FilterState>({
+    level: []
+  })
+
+  const filteredClasses = useMemo(() => {
+    return classes.filter((cls) => {
+      const levelMatch = filters.level.length === 0 || filters.level.includes(cls.level)
+      return levelMatch
+    })
+  }, [classes, filters])
+
+  const handleLevelToggle = (level: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      level: prev.level.includes(level) ? prev.level.filter((l) => l !== level) : [...prev.level, level],
+    }))
+  }
+
+  const handleClearFilters = () => {
+    setFilters({
+      level: [],
+    })
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -26,9 +50,15 @@ const HomeScreen: React.FC = () => {
     <View
       style={styles.container}
     >
+      <FilterSection
+        filters={filters}
+        onLevelToggle={handleLevelToggle}
+        onClearFilters={handleClearFilters}
+      />
+
       <View style={styles.listWrapper}>
         <FlatList
-          data={classes}
+          data={filteredClasses}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <ClassCard fitnessClass={item} />}
           contentContainerStyle={styles.listContainer}
