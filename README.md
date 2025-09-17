@@ -1,50 +1,105 @@
-# Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Fit App
 
-## Get started
+A small **Expo (React Native + TypeScript)** app with two screens:
 
-1. Install dependencies
+- **Home** – Browse & filter classes, simulate booking
 
-   ```bash
-   npm install
-   ```
+- **Profile** – Display and edit user details (stored locally)
 
-2. Start the app
 
-   ```bash
-   npx expo start
-   ```
 
-In the output, you'll find options to open the app in a
+## Preview
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+👉 [Watch it in action!](https://drive.google.com/file/d/1NxaalTpb0iqRFxeQKNDpRU5v1Y2YTjiH/view?usp=sharing)
+## Screenshots
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Home Screen
+![Home Screen](./screenshots/home.png)
 
-## Get a fresh project
+### Profile Screen
+![Profile Screen](./screenshots/profile.png)
+## Features  
 
-When you're ready, run:
+### Home Screen  
+
+- List of Classes with:  
+  - Class name  
+  - Level (Beginner / Intermediate / Advanced)  
+  - Instructor name  
+  - Center name
+
+- Filters:
+    - Level → Filter chips (Beginner / Intermediate / Advanced)
+    - Instructor → Dropdown / Modal list
+
+- Class Card:
+    - Shows metadata
+    - Quick Book button:
+        - Simulates booking with optimistic update
+        - 15% chance of failure → rollback with error (toast/snackbar)
+
+- States:
+    - Loading → Spinner for 1–2s on startup
+    - Empty State → Message + “Clear Filters” button
+
+### Profile Screen
+
+- Displays:
+    - Avatar placeholder (circle)
+    - User name
+    - Mobile number
+    - Membership credits
+    - Additional static details (e.g., city, joined date)
+
+- Editing:
+    - Edit name (inline input or modal)
+    - Stored locally only
+
+## Tech Stack
+
+- Expo + React Native
+- TypeScript
+- Mock Data (no backend required)
+- State Management → React hooks (useState, useEffect)
+
+
+## Installation Guide
+
+### Prerequisites
+
+Before you begin, make sure you have:
+
+- **Node.js** (v20 or later) – [Download](https://nodejs.org/)
+
+### Clone the Repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/lipika1911/Fit-App.git
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Install Dependencies
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### Run the App
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npx expo start
+```
 
-## Join the community
+### Run on:
 
-Join our community of developers creating universal apps.
+- iOS Simulator → press i
+- Android Emulator → press a
+- Physical Device → scan QR with Expo Go app
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Design Choices and Trade Offs
+
+- Optimistic UI for booking → feels instant, but rollback ensures correctness.
+- Mock data → simplifies setup while showcasing state handling.
+- Local state for profile edits 
+- Minimal dependencies → kept project lightweight.
+- Toast/snackbar for errors and success updates → clear feedback to user.
