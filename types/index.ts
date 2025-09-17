@@ -19,4 +19,5 @@ export interface User {
 
 export interface FilterState {
   level: string[]
+  instructor: string
 }

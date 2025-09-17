@@ -1,17 +1,19 @@
 import type React from "react"
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
 import FilterChip from "./FilterChip"
 import type { FilterState } from "@/types"
 
 interface FilterSectionProps {
   filters: FilterState
   onLevelToggle: (level: string) => void
+  onInstructorPress: () => void
   onClearFilters: () => void
 }
 
-const FilterSection: React.FC<FilterSectionProps> = ({ filters, onLevelToggle, onClearFilters }) => {
+const FilterSection: React.FC<FilterSectionProps> = ({ filters, onLevelToggle, onInstructorPress, onClearFilters }) => {
   const levels = ["Beginner", "Intermediate", "Advanced"]
-  const hasActiveFilters = filters.level.length > 0
+  const hasActiveFilters = filters.level.length > 0 || filters.instructor !== "All Instructors"
 
   return (
     <View style={styles.container}>
@@ -36,6 +38,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({ filters, onLevelToggle, o
             />
           ))}
         </View>
+      </View>
+
+      <View style={styles.filterGroup}>
+        <Text style={styles.filterLabel}>Instructor</Text>
+        <TouchableOpacity style={styles.instructorSelector} onPress={onInstructorPress}>
+          <Text style={styles.instructorText}>{filters.instructor}</Text>
+          <Ionicons name="chevron-down" size={20} color="#666" />
+        </TouchableOpacity>
       </View>
     </View>
   )
@@ -76,6 +86,20 @@ const styles = StyleSheet.create({
   chipContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  instructorSelector: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+  },
+  instructorText: {
+    fontSize: 16,
+    color: "#1a1a1a",
   },
 })
 

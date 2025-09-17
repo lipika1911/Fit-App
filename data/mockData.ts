@@ -68,3 +68,5 @@ export const mockUser: User = {
   joinedDate: "January 2024",
 }
 
+export const instructors = Array.from(new Set(mockClasses.map((c) => c.instructor)))
+

@@ -1,7 +1,8 @@
 import ClassCard from "@/components/ClassCard";
 import FilterSection from "@/components/FilterSection";
+import InstructorModal from "@/components/InstructorModal";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { mockClasses } from "@/data/mockData";
+import { mockClasses, instructors } from "@/data/mockData";
 import {FilterState, FitnessClass } from "@/types";
 import { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
@@ -10,13 +11,16 @@ const HomeScreen: React.FC = () => {
   const [classes, setClasses] = useState<FitnessClass[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [filters, setFilters] = useState<FilterState>({
-    level: []
+    level: [],
+    instructor: "All Instructors",
   })
+  const [showInstructorModal, setShowInstructorModal] = useState(false)
 
   const filteredClasses = useMemo(() => {
     return classes.filter((cls) => {
       const levelMatch = filters.level.length === 0 || filters.level.includes(cls.level)
-      return levelMatch
+      const instructorMatch = filters.instructor === "All Instructors" || cls.instructor === filters.instructor
+      return levelMatch && instructorMatch
     })
   }, [classes, filters])
 
@@ -27,9 +31,17 @@ const HomeScreen: React.FC = () => {
     }))
   }
 
+  const handleInstructorSelect = (instructor: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      instructor,
+    }))
+  }
+
   const handleClearFilters = () => {
     setFilters({
       level: [],
+      instructor: "All Instructors",
     })
   }
 
@@ -53,6 +65,7 @@ const HomeScreen: React.FC = () => {
       <FilterSection
         filters={filters}
         onLevelToggle={handleLevelToggle}
+        onInstructorPress={() => setShowInstructorModal(true)}
         onClearFilters={handleClearFilters}
       />
 
@@ -66,6 +79,15 @@ const HomeScreen: React.FC = () => {
           bounces={true}
         />
       </View>
+
+      <InstructorModal
+        visible={showInstructorModal}
+        instructors={instructors}
+        selectedInstructor={filters.instructor}
+        onSelect={handleInstructorSelect}
+        onClose={() => setShowInstructorModal(false)}
+      />
+
     </View>
   );
 }
