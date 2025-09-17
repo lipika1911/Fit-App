@@ -1,4 +1,5 @@
 import ClassCard from "@/components/ClassCard";
+import EmptyState from "@/components/EmptyState";
 import FilterSection from "@/components/FilterSection";
 import InstructorModal from "@/components/InstructorModal";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -56,6 +57,37 @@ const HomeScreen: React.FC = () => {
 
   if (loading) {
     return <LoadingSpinner message="Loading classes..." />
+  }
+
+  if (filteredClasses.length === 0) {
+    const hasActiveFilters = filters.level.length > 0 || filters.instructor !== "All Instructors"
+    return (
+      <View style={styles.container}>
+        <FilterSection
+          filters={filters}
+          onLevelToggle={handleLevelToggle}
+          onInstructorPress={() => setShowInstructorModal(true)}
+          onClearFilters={handleClearFilters}
+        />
+        <EmptyState
+          title="No Classes Found"
+          message={
+            hasActiveFilters
+              ? "We couldn't find any classes matching your current filters."
+              : "No classes are available at the moment."
+          }
+          actionText={hasActiveFilters ? "Clear Filters" : undefined}
+          onAction={hasActiveFilters ? handleClearFilters : undefined}
+        />
+        <InstructorModal
+          visible={showInstructorModal}
+          instructors={instructors}
+          selectedInstructor={filters.instructor}
+          onSelect={handleInstructorSelect}
+          onClose={() => setShowInstructorModal(false)}
+        />
+      </View>
+    )
   }
 
   return (
