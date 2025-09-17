@@ -12,6 +12,7 @@ A small **Expo (React Native + TypeScript)** app with two screens:
 ## Preview
 
 👉 [Watch it in action!](https://drive.google.com/file/d/1NxaalTpb0iqRFxeQKNDpRU5v1Y2YTjiH/view?usp=sharing)
+
 ## Screenshots
 
 ### Home Screen
@@ -19,6 +20,7 @@ A small **Expo (React Native + TypeScript)** app with two screens:
 
 ### Profile Screen
 ![Profile Screen](./screenshots/profile.png)
+
 ## Features  
 
 ### Home Screen  
