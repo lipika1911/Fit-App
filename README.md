@@ -15,11 +15,12 @@ A small **Expo (React Native + TypeScript)** app with two screens:
 
 ## Screenshots
 
-### Home Screen
-![Home Screen](./screenshots/home.png)
+### 🏠 Home Screen
+<img src="./screenshots/home.png" alt="Home Screen" width="200"/>
 
-### Profile Screen
-![Profile Screen](./screenshots/profile.png)
+### 👤 Profile Screen
+<img src="./screenshots/profile.png" alt="Profile Screen" width="200"/>
+
 
 ## Features  
 
